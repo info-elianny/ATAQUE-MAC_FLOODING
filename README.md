@@ -126,3 +126,4 @@ SW(config-if)# switchport port-security violation shutdown
 ---
 
 > ⚠️ **Este script es únicamente con fines educativos y de investigación en entornos controlados.**
+> ⚠️ **BY: Elianny**
