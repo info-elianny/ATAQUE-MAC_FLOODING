@@ -8,6 +8,9 @@
 
 Demostrar el funcionamiento de un ataque MAC Flooding en una red local, observando cómo el envío masivo de direcciones MAC falsas puede afectar la **tabla CAM** de un switch y alterar la forma en que este maneja el tráfico de red.
 
+### Topología de Red
+![Topología de Red](https://i.postimg.cc/j56Qfxzx/MAC-1.png)
+
 ---
 
 ## 🎯 Objetivo del Script
@@ -77,26 +80,14 @@ sudo python3 mac_flooding.py
 
 ## 📸 Capturas de Pantalla
 
-### Topología de Red
-![Topología de Red](images/image2.png)
-
-### Configuración de la red
-![Configuración de la red](images/image3.png)
-
 ### Tabla CAM antes del ataque (MAC del router y Kali Linux)
-![Tabla CAM antes del ataque](images/image4.png)
+![Tabla CAM antes del ataque](https://i.postimg.cc/DypQLYbt/MAC-CAP-1.png)
 
 ### Ataque corriendo
-![Ataque corriendo](images/image5.png)
+![Ataque corriendo](https://i.postimg.cc/PxMYx6jP/MAC-CAP-2.png)
 
 ### Tabla CAM durante el ataque
-![Tabla CAM durante el ataque](images/image6.png)
-
-### Resultado en el switch
-![Resultado en el switch](images/image7.png)
-
-### Evidencia final
-![Evidencia final](images/image8.png)
+![Tabla CAM durante el ataque](https://i.postimg.cc/bY31fFgB/MAC-CAP-3.png)
 
 ---
 
@@ -123,7 +114,13 @@ SW(config-if)# switchport port-security maximum 2
 SW(config-if)# switchport port-security violation shutdown
 ```
 
+![Port Security resultado](https://i.postimg.cc/3Jqpd4Ps/MAC-M-1.png)
+
+
+### Resultado del Aataque con la medida de seguridad
+![Port Security evidencia 2](https://i.postimg.cc/nzn96vDX/MAC-M-2.png)
+
 ---
 
-> ⚠️ **Este script es únicamente con fines educativos y de investigación en entornos controlados.**
+> ⚠️ **Este script es únicamente con fines educativos y de investigación en entornos controlados.**  
 > ⚠️ **BY: Elianny**
