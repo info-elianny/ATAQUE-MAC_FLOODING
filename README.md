@@ -1,6 +1,6 @@
 # 🛡️ Ataque MAC Flooding
 
-📹 [Video demostración](https://youtu.be/lUHQbcc3u7w) | 📂 [Repositorio](https://github.com/info-elianny/ATAQUE-MAC_FLOODING)
+📹 [Video demostración](https://youtu.be/lUHQbcc3u7w) 
 
 ---
 
